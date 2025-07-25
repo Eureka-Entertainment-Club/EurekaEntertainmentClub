@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EUREKA | CSE (AI & ML) Entertainment Club</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* CSS Reset & Global Styles */
+        :root {
+            --primary-dark: #0d0c1d;
+            --secondary-dark: #16152a;
+            --primary-accent: #e03f6a;
+            --secondary-accent: #00f5c8;
+            --text-light: #f0f0f0;
+            --text-muted: #a0a0c0;
+            --highlight-president-bg: rgba(255, 221, 89, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--primary-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            background-image:
+                radial-gradient(at 20% 10%, hsla(278, 70%, 25%, 0.2) 0px, transparent 50%),
+                radial-gradient(at 80% 20%, hsla(190, 75%, 30%, 0.2) 0px, transparent 50%),
+                radial-gradient(at 50% 80%, hsla(340, 75%, 35%, 0.15) 0px, transparent 50%),
+                radial-gradient(at 90% 90%, hsla(210, 65%, 25%, 0.2) 0px, transparent 50%);
+            overflow-x: hidden;
+        }
+
+        #fluid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .page-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 2rem;
+        }
+
+        section {
+            padding: 8rem 0;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h2 {
+            font-size: clamp(2rem, 5vw, 2.5rem);
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--secondary-accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 245, 200, 0.3);
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: rgba(13, 12, 29, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 245, 200, 0.1);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+        }
+
+        .nav-logo img {
+            height: 50px;
+            width: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--secondary-accent);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-logo img:hover {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .nav-logo .logo-text {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--primary-accent);
+            text-shadow: 0 0 8px rgba(224, 63, 106, 0.5);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--secondary-accent);
+            text-shadow: 0 0 5px var(--secondary-accent);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--secondary-accent);
+            box-shadow: 0 0 8px var(--secondary-accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 1.8rem;
+        }
+
+        #home {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 4rem;
+            padding: 0 2rem;
+        }
+
+        #home .logo-home {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--secondary-accent);
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 15px rgba(0, 245, 200, 0.4); }
+            100% { transform: scale(1.05); box-shadow: 0 0 30px rgba(0, 245, 200, 0.7); }
+        }
+
+        .hero-content {
+            text-align: left;
+            max-width: 600px;
+        }
+
+        .hero-content h1 {
+            font-size: clamp(3rem, 8vw, 4.5rem);
+            font-weight: 900;
+            color: var(--primary-accent);
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 15px rgba(224, 63, 106, 0.5);
+        }
+
+        .hero-content .subtitle {
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            color: var(--secondary-accent);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 8px rgba(0, 245, 200, 0.4);
+        }
+
+        .hero-content .tagline {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .glass-card {
+            background: rgba(22, 21, 42, 0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 245, 200, 0.2);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        
+        #about .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        #about .vision-mission h3 { color: var(--secondary-accent); font-size: 1.8rem; margin-bottom: 1rem; }
+        #about .vision-mission p { color: var(--text-muted); margin-bottom: 2rem; }
+        #about .core-values { padding: 2rem; }
+        .value-item { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .value-item i { font-size: 2rem; color: var(--secondary-accent); min-width: 40px; text-align: center; }
+
+        .objectives-section { margin-top: 6rem; }
+        .section-subtitle { text-align: center; font-size: 2rem; color: var(--text-light); margin-bottom: 2.5rem; }
+        .objectives-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .objective-card { padding: 2rem; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .objective-card:hover { transform: translateY(-8px); box-shadow: 0 0 25px rgba(0, 245, 200, 0.3); }
+        .objective-card i { font-size: 2.5rem; color: var(--primary-accent); margin-bottom: 1rem; }
+        .objective-card h4 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+        .objective-card p { font-size: 0.9rem; color: var(--text-muted); }
+
+        .events-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .event-card { padding: 2rem; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .event-card:hover { transform: translateY(-10px); box-shadow: 0 0 25px rgba(224, 63, 106, 0.4); }
+        .event-card h3 { color: var(--primary-accent); margin-bottom: 1rem; }
+        .event-card p { color: var(--text-muted); margin-bottom: 1.5rem; }
+        .event-card .date { font-weight: 600; }
+        .btn { padding: 0.8rem 1.8rem; background: linear-gradient(45deg, var(--primary-accent), #f472b6); color: #fff; border: none; border-radius: 50px; text-decoration: none; font-weight: 600; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(224, 63, 106, 0.4); }
+
+        .president-section { text-align: center; margin-bottom: 5rem; }
+        .president-section h3 { font-size: 1.8rem; color: var(--secondary-accent); margin-bottom: 1.5rem; }
+        .president-card { display: flex; align-items: center; gap: 2rem; max-width: 600px; margin: auto; background: var(--highlight-president-bg); padding: 2rem; border-radius: 15px; border: 2px solid #ffdd59; box-shadow: 0 0 30px rgba(255, 221, 89, 0.3); }
+        .president-card .avatar { width: 150px; height: 150px; border-radius: 50%; flex-shrink: 0; border: 4px solid #ffdd59; overflow: hidden; }
+        .president-card .info { text-align: left; }
+        .president-card h4 { font-size: 1.8rem; color: #ffdd59; }
+        .president-card p { font-size: 1.2rem; color: var(--text-light); }
+        
+        .team-category { margin-bottom: 4rem; }
+        .team-category h3 { text-align: center; margin-bottom: 2rem; font-size: 1.8rem; color: var(--secondary-accent); }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2rem;
+            justify-content: center;
+        }
+        
+        .team-member { padding: 1.5rem; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .team-member:hover { transform: translateY(-5px); }
+        .team-member.core-member { border: 2px solid var(--secondary-accent); box-shadow: 0 0 15px rgba(0, 245, 200, 0.1); }
+        .team-member.core-member:hover { box-shadow: 0 0 25px rgba(0, 245, 200, 0.3); }
+        
+        .avatar { width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 1rem; overflow: hidden; }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .team-member h3 { font-size: 1.2rem; }
+        .team-member p { color: var(--text-muted); }
+
+        /* Hide duplicated team members on desktop view */
+        .core-committee-grid .team-member:nth-child(n+4) { display: none; }
+        .supportive-team-grid .team-member:nth-child(n+5) { display: none; }
+        
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+        .gallery-item { overflow: hidden; border-radius: 10px; position: relative; border: 1px solid rgba(255,255,255,0.1); }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
+        .gallery-item:hover img { transform: scale(1.1); }
+        
+        .contact-info { max-width: 700px; margin: 0 auto; text-align: center; padding: 3rem; }
+        .contact-info p { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.5rem; font-size: 1.2rem; color: var(--text-muted); }
+        .contact-info i { font-size: 1.5rem; color: var(--primary-accent); }
+        .contact-info .social-links { margin-top: 2rem; }
+        .social-links a { color: var(--text-light); font-size: 2.5rem; margin: 0 1rem; transition: color 0.3s ease, transform 0.3s ease; }
+        .social-links a:hover { color: var(--primary-accent); transform: scale(1.2); }
+
+        footer {
+            background-color: var(--secondary-dark); text-align: center; padding: 3rem;
+            border-top: 1px solid rgba(0, 245, 200, 0.1);
+            margin-top: 5rem;
+        }
+        .footer-content { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+        .footer-logo img { height: 40px; width: 40px; border-radius: 50%; object-fit: cover; opacity: 0.7; }
+        footer p { color: var(--text-muted); font-size: 0.9rem; }
+        
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* --- RESPONSIVE DESIGN --- */
+        @media (max-width: 1024px) {
+            #home { gap: 2rem; }
+            #home .logo-home { width: 200px; height: 200px; }
+            .president-card { flex-direction: column; text-align: center; }
+            .president-card .info { text-align: center; }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 0 1.5rem; }
+            section { padding: 6rem 0; }
+            .nav-logo { gap: 0.5rem; }
+            .nav-logo img { height: 40px; width: 40px; }
+            .nav-logo .logo-text { display: none; }
+            .hamburger { display: block; z-index: 1001; }
+            .nav-links {
+                position: fixed; top: 0; left: -100%; width: 100%; height: 100vh;
+                background-color: var(--primary-dark); flex-direction: column; justify-content: center;
+                align-items: center; transition: left 0.5s ease; gap: 2.5rem;
+            }
+            .nav-links.active { left: 0; }
+            .nav-links a { font-size: 1.5rem; }
+            #home { flex-direction: column; text-align: center; gap: 2rem; }
+            #home .logo-home { width: 150px; height: 150px; }
+            .hero-content { text-align: center; }
+            #about .about-content { grid-template-columns: 1fr; }
+            
+            /* MOBILE TEAM AUTO-SCROLLING EFFECT */
+            .team-category {
+                overflow: hidden; /* Hide the content that scrolls out of view */
+                position: relative;
+            }
+            .team-category::before, .team-category::after { /* Add fade effect at the edges */
+                content: '';
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                width: 2rem;
+                z-index: 2;
+            }
+            .team-category::before {
+                left: 0;
+                background: linear-gradient(to right, var(--primary-dark), transparent);
+            }
+            .team-category::after {
+                right: 0;
+                background: linear-gradient(to left, var(--primary-dark), transparent);
+            }
+            .team-grid {
+                display: flex;
+                flex-wrap: nowrap;
+                width: max-content;
+                animation: marquee 25s linear infinite;
+            }
+            .team-member {
+                flex-shrink: 0;
+                width: 70vw; /* Each card takes up 70% of the screen */
+                margin: 0 1rem;
+            }
+            /* Un-hide duplicated members on mobile */
+            .core-committee-grid .team-member:nth-child(n+4),
+            .supportive-team-grid .team-member:nth-child(n+5) {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="fluid"></canvas>
+
+    <div class="page-content">
+        <header class="navbar">
+            <a href="#home" class="nav-logo">
+                <img src="eureka-logo.png" alt="EUREKA Club Logo">
+                <span class="logo-text">EUREKA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#events">Upcoming Events</a></li>
+                <li><a href="#team">Team</a></li>
+                <li><a href="#moments">Moments</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </header>
+
+        <main>
+            <section id="home">
+                <img src="eureka-logo.png" alt="EUREKA Club Logo" class="logo-home">
+                <div class="hero-content">
+                    <h1>EUREKA</h1>
+                    <p class="subtitle">CSE (AI & ML) | Entertainment, Unleashed, Rhythm, Energy, Knowledge, Art</p>
+                    <p class="tagline">"One Stage... Many Stories..."</p>
+                </div>
+            </section>
+
+            <section id="about" class="container">
+                <h2>About Us</h2>
+                <div class="about-content">
+                    <div class="vision-mission">
+                        <h3>🎯 Vision</h3>
+                        <p>To be the heartbeat of campus life by creating a vibrant space where creativity, fun, and cultural expression thrive. We aim to inspire joy, build community, and foster talent through engaging events, performances, and interactive experiences that celebrate the diverse spirit of our student body.</p>
+                        <h3>🚀 Mission</h3>
+                        <p>To create a vibrant space where students express their creativity, showcase talent, and celebrate culture through music, dance, drama, fashion, and the arts. We aim to unite, inspire, and empower through entertainment.<br><strong>Entertain. Express. Empower.</strong></p>
+                    </div>
+                    <div class="core-values glass-card">
+                        <h3>🔑 Core Values</h3>
+                        <div class="value-item"><i class="fas fa-lightbulb"></i><div><h4>🌟 Ignite Ideas</h4><p>“We believe in thinking creatively and bringing fresh, fun-filled concepts to life through unique events.
+”</p></div></div>
+                        <div class="value-item"><i class="fas fa-users"></i><div><h4>🤝 Together We Create</h4><p>“Our strength lies in unity — we work with other clubs, support each other, and build unforgettable experiences as a team.
+”</p></div></div>
+                        <div class="value-item"><i class="fas fa-trophy"></i><div><h4>🏆 Shine Every Time</h4><p>“We aim to deliver the best — in energy, execution, and excitement — ensuring top-quality entertainment for everyone.”</p></div></div>
+                    </div>
+                </div>
+                <div class="objectives-section">
+                    <h3 class="section-subtitle">Our Objectives</h3>
+                    <div class="objectives-grid">
+                        <div class="objective-card glass-card"><i class="fas fa-guitar"></i><h4>Showcase Talent</h4><p>Encourage students to display skills in music, dance, stand-up comedy, DJing, and more.</p></div>
+                        <div class="objective-card glass-card"><i class="fas fa-star"></i><h4>Host Dynamic Events</h4><p>Conduct festivals, DJ nights, theme parties, and surprise flash mobs to energize the campus.</p></div>
+                        <div class="objective-card glass-card"><i class="fas fa-car"></i><h4>Automotive Shows</h4><p>Organize car and bike expos featuring modified, vintage, and innovative student vehicles.</p></div>
+                        <div class="objective-card glass-card"><i class="fas fa-smile-beam"></i><h4>Boost Campus Vibe</h4><p>Create stress-busting events and fun competitions to break the academic monotony.</p></div>
+                        <div class="objective-card glass-card"><i class="fas fa-heart"></i><h4>Promote Inclusivity</h4><p>Unite students from all departments by celebrating cultural diversity and college festivals.</p></div>
+                        <div class="objective-card glass-card"><i class="fas fa-share-alt"></i><h4>Digital Creativity</h4><p>Leverage social media with event highlights, reels, and online contests to create a buzz.</p></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="events" class="container">
+                <h2>Upcoming Events</h2>
+                <!-- <div class="events-grid">
+                    <div class="event-card glass-card"><h3>Open Mic Night</h3><p>Share your poetry, stories, or stand-up comedy in a supportive space.</p><p class="date">Oct 15, 2025 | 6:00 PM</p><a href="#" class="btn">Register Now</a></div>
+                    <div class="event-card glass-card"><h3>Talent Fiesta</h3><p>The ultimate stage for singers, musicians, and performers to shine.</p><p class="date">Nov 22, 2025 | 5:00 PM</p><a href="#" class="btn">Register Now</a></div>
+                    <div class="event-card glass-card"><h3>Fashion Walk</h3><p>Witness creativity and style as designers and models own the ramp.</p><p class="date">Dec 10, 2025 | 7:00 PM</p><a href="#" class="btn">Register Now</a></div>
+                    <div class="event-card glass-card"><h3>Dance Battle</h3><p>Feel the beat and watch electrifying dance-offs between crews and soloists.</p><p class="date">Jan 18, 2026 | 4:00 PM</p><a href="#" class="btn">Register Now</a></div>
+                    <div class="event-card glass-card"><h3>Musical Jam</h3><p>An informal jam session where musicians can collaborate and create live.</p><p class="date">Feb 05, 2026 | 3:00 PM</p><a href="#" class="btn">Register Now</a></div>
+                </div> -->
+            </section>
+
+            <section id="team" class="container">
+                <h2>Meet The Team</h2>
+                <div class="president-section">
+                    <h3>Our Leader</h3>
+                    <div class="president-card">
+                        <div class="avatar"><img src="team-photos/devi-satya.jpg" alt="Photo of D. Devi Satya"></div>
+                        <div class="info"><h4>D. Devi Satya</h4><p>President</p></div>
+                    </div>
+                </div>
+                <div class="team-category">
+                    <h3>Core Committee</h3>
+                    <div class="team-grid core-committee-grid">
+                        <div class="team-member glass-card core-member"><div class="avatar"><img src="team-photos/tejaswi.jpg" alt="Photo of S. Tejaswi"></div><h3>S. Tejaswi</h3><p>Vice President</p></div>
+                        <div class="team-member glass-card core-member"><div class="avatar"><img src="team-photos/harini.jpg" alt="Photo of Harini"></div><h3>N. Harini</h3><p>Treasurer</p></div>
+                        <div class="team-member glass-card core-member"><div class="avatar"><img src="team-photos/sai-sowmya.jpg" alt="Photo of A. Sai Sowmya"></div><h3>A. Sai Sowmya</h3><p>Secretary</p></div>
+                        <div class="team-member glass-card core-member"><div class="avatar"><img src="team-photos/tejaswi.jpg" alt="Photo of S. Tejaswi"></div><h3>S. Tejaswi</h3><p>Vice President</p></div>
+                        <div class="team-member glass-card core-member"><div class="avatar"><img src="team-photos/harini.jpg" alt="Photo of Harini"></div><h3>N Harini</h3><p>Treasurer</p></div>
+                        <div class="team-member glass-card core-member"><div class="avatar"><img src="team-photos/sai-sowmya.jpg" alt="Photo of A. Sai Sowmya"></div><h3>A. Sai Sowmya</h3><p>Secretary</p></div>
+                    </div>
+                </div>
+                <div class="team-category">
+                    <h3>Supportive Team Members</h3>
+                    <div class="team-grid supportive-team-grid">
+                        <div class="team-member glass-card"><div class="avatar"><img src="team-photos/meghana.jpg" alt="Photo of B. Meghana"></div><h3>B. Meghana</h3></div>
+                        <div class="team-member glass-card"><div class="avatar"><img src="team-photos/yameen-sherif.jpg" alt="Photo of SK. Yameen Sherif"></div><h3>SK. Yameen Sherif</h3></div>
+                        <div class="team-member glass-card"><div class="avatar"><img src="team-photos/archana.jpg" alt="Photo of CH. Archana"></div><h3>CH. Archana</h3></div>
+                        <div class="team-member glass-card"><div class="avatar"><img src="team-photos/swetha-reddy.jpg" alt="Photo of E. Swetha Reddy"></div><h3>E. Swetha Reddy</h3></div>
+                        <div class="team-member glass-card"><div class="avatar"><img src="team-photos/meghana.jpg" alt="Photo of B. Meghana"></div><h3>B. Meghana</h3></div>
+                        <div class="team-member glass-card"><div class="avatar"><img src="team-photos/yameen-sherif.jpg" alt="Photo of SK. Yameen Sherif"></div><h3>SK. Yameen Sherif</h3></div>
+                        <div class="team-member glass-card"><div class="avatar"><img src="team-photos/archana.jpg" alt="Photo of CH. Archana"></div><h3>CH. Archana</h3></div>
+                        <div class="team-member glass-card"><div class="avatar"><img src="team-photos/swetha-reddy.jpg" alt="Photo of E. Swetha Reddy"></div><h3>E. Swetha Reddy</h3></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="moments" class="container">
+                <h2>Moments</h2>
+                <div class="gallery-grid">
+                    <!-- <div class="gallery-item"><img src="images/event1.jpg" alt="Event 1 Photo"></div>
+                    <div class="gallery-item"><img src="images/event2.jpg" alt="Event 2 Photo"></div>
+                    <div class="gallery-item"><img src="images/event3.jpg" alt="Event 3 Photo"></div>
+                    <div class="gallery-item"><img src="images/event4.jpg" alt="Event 4 Photo"></div>
+                    <div class="gallery-item"><img src="images/event5.jpg" alt="Event 5 Photo"></div>
+                    <div class="gallery-item"><img src="images/event6.jpg" alt="Event 6 Photo"></div>
+                    <div class="gallery-item"><img src="images/event7.jpg" alt="Event 7 Photo"></div>
+                    <div class="gallery-item"><img src="images/event8.jpg" alt="Event 8 Photo"></div> -->
+                </div>
+            </section>
+
+            <section id="contact" class="container">
+                <h2>Get in Touch</h2>
+                <div class="contact-info glass-card">
+                    <p><i class="fas fa-envelope"></i> <a href="mailto:eureka@pscmr.ac.in" style="text-decoration: none; color: inherit;">eureka@pscmr.ac.in</a></p>
+                    <p><i class="fas fa-map-marker-alt"></i> <a href="https://maps.app.goo.gl/AnzwQc6zmdENYZg26" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">PSCMR College of Engineering and Technology</a></p>
+                    <p><i class="fab fa-instagram"></i> <a href="https://www.instagram.com/eureka_pscmr?utm_source=qr&igsh=MWJvYnd1c2s3b2xrZA==" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">@EUREKA_PSCMR</a></p>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="page-content">
+            <div class="container footer-content">
+                <div class="footer-logo">
+                    <img src="eureka-logo.png" alt="EUREKA Club Footer Logo">
+                </div>
+                <p>© 2025 EUREKA Entertainment Club. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // --- START OF FLUID SIMULATION SCRIPT ---
+        // This script is modified to run automatically without mouse input.
+        class FluidBackground {
+            constructor(options = {}) {
+                this.config = {
+                    SIM_RESOLUTION: 128, DYE_RESOLUTION: 1024, DENSITY_DISSIPATION: 1,
+                    VELOCITY_DISSIPATION: 0.3, PRESSURE: 0.8, PRESSURE_ITERATIONS: 20,
+                    CURL: 20, SPLAT_RADIUS: 0.3, SPLAT_FORCE: 6000, SHADING: true, COLORFUL: true, PAUSED: false
+                };
+                this.canvas = document.getElementById('fluid');
+                this.lastUpdateTime = Date.now();
+                this.splatTimer = 0;
+                this.init();
+            }
+
+            init() {
+                const webglContext = this.getWebGLContext(this.canvas);
+                if (!webglContext) { console.error('WebGL not supported'); return; }
+                this.gl = webglContext.gl; this.ext = webglContext.ext;
+                this.initShaders(); this.initPrograms(); this.initFramebuffers(); this.updateFrame();
+            }
+
+            getWebGLContext(canvas) {
+                const params = { alpha: true, depth: false, stencil: false, antialias: false };
+                let gl = canvas.getContext('webgl2', params);
+                const isWebGL2 = !!gl;
+                if (!isWebGL2) gl = canvas.getContext('webgl', params) || canvas.getContext('experimental-webgl', params);
+                if (!gl) return null;
+                let halfFloat, supportLinearFiltering;
+                if (isWebGL2) { gl.getExtension('EXT_color_buffer_float'); supportLinearFiltering = gl.getExtension('OES_texture_float_linear');
+                } else { halfFloat = gl.getExtension('OES_texture_half_float'); supportLinearFiltering = gl.getExtension('OES_texture_half_float_linear'); }
+                gl.clearColor(0.0, 0.0, 0.0, 1.0);
+                const halfFloatTexType = isWebGL2 ? gl.HALF_FLOAT : halfFloat?.HALF_FLOAT_OES;
+                let formatRGBA, formatRG, formatR;
+                if (isWebGL2) {
+                    formatRGBA = this.getSupportedFormat(gl, gl.RGBA16F, gl.RGBA, halfFloatTexType);
+                    formatRG = this.getSupportedFormat(gl, gl.RG16F, gl.RG, halfFloatTexType);
+                    formatR = this.getSupportedFormat(gl, gl.R16F, gl.RED, halfFloatTexType);
+                } else {
+                    formatRGBA = this.getSupportedFormat(gl, gl.RGBA, gl.RGBA, halfFloatTexType);
+                    formatRG = this.getSupportedFormat(gl, gl.RGBA, gl.RGBA, halfFloatTexType);
+                    formatR = this.getSupportedFormat(gl, gl.RGBA, gl.RGBA, halfFloatTexType);
+                }
+                return { gl, ext: { formatRGBA, formatRG, formatR, halfFloatTexType, supportLinearFiltering } };
+            }
+
+            getSupportedFormat(gl, internalFormat, format, type) {
+                if (!this.supportRenderTextureFormat(gl, internalFormat, format, type)) {
+                    switch (internalFormat) {
+                        case gl.R16F: return this.getSupportedFormat(gl, gl.RG16F, gl.RG, type);
+                        case gl.RG16F: return this.getSupportedFormat(gl, gl.RGBA16F, gl.RGBA, type);
+                        default: return null;
+                    }
+                }
+                return { internalFormat, format };
+            }
+
+            supportRenderTextureFormat(gl, internalFormat, format, type) {
+                const texture = gl.createTexture();
+                gl.bindTexture(gl.TEXTURE_2D, texture);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, 4, 4, 0, format, type, null);
+                const fbo = gl.createFramebuffer();
+                gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+                gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+                return gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
+            }
+
+            initShaders() { this.baseVertexShader = this.compileShader(this.gl.VERTEX_SHADER, `precision highp float; attribute vec2 aPosition; varying vec2 vUv; void main () { vUv = aPosition * 0.5 + 0.5; gl_Position = vec4(aPosition, 0.0, 1.0); }`); this.splatShader = this.compileShader(this.gl.FRAGMENT_SHADER, `precision highp float; varying vec2 vUv; uniform sampler2D uTarget; uniform float aspectRatio; uniform vec3 color; uniform vec2 point; uniform float radius; void main () { vec2 p = vUv - point.xy; p.x *= aspectRatio; vec3 splat = exp(-dot(p, p) / radius) * color; vec3 base = texture2D(uTarget, vUv).xyz; gl_FragColor = vec4(base + splat, 1.0); }`); this.advectionShader = this.compileShader(this.gl.FRAGMENT_SHADER, `precision highp float; varying vec2 vUv; uniform sampler2D uVelocity; uniform sampler2D uSource; uniform vec2 texelSize; uniform float dt; uniform float dissipation; void main () { vec2 coord = vUv - dt * texture2D(uVelocity, vUv).xy * texelSize; vec4 result = texture2D(uSource, coord); gl_FragColor = result / (1.0 + dissipation * dt); }`); this.divergenceShader = this.compileShader(this.gl.FRAGMENT_SHADER, `precision mediump float; varying highp vec2 vUv; varying highp vec2 vL; varying highp vec2 vR; varying highp vec2 vT; varying highp vec2 vB; uniform sampler2D uVelocity; vec2 sampleVelocity (sampler2D sampler, vec2 uv) { vec2 multiplier = vec2(1.0, 1.0); if (uv.x < 0.0) { uv.x = 0.0; multiplier.x = -1.0; } if (uv.x > 1.0) { uv.x = 1.0; multiplier.x = -1.0; } if (uv.y < 0.0) { uv.y = 0.0; multiplier.y = -1.0; } if (uv.y > 1.0) { uv.y = 1.0; multiplier.y = -1.0; } return multiplier * texture2D(sampler, uv).xy; } void main () { float L = sampleVelocity(uVelocity, vL).x; float R = sampleVelocity(uVelocity, vR).x; float T = sampleVelocity(uVelocity, vT).y; float B = sampleVelocity(uVelocity, vB).y; float div = 0.5 * (R - L + T - B); gl_FragColor = vec4(div, 0.0, 0.0, 1.0); }`); this.curlShader = this.compileShader(this.gl.FRAGMENT_SHADER, `precision mediump float; varying highp vec2 vUv; varying highp vec2 vL; varying highp vec2 vR; varying highp vec2 vT; varying highp vec2 vB; uniform sampler2D uVelocity; void main () { float L = texture2D(uVelocity, vL).y; float R = texture2D(uVelocity, vR).y; float T = texture2D(uVelocity, vT).x; float B = texture2D(uVelocity, vB).x; float curl = T - B - R + L; gl_FragColor = vec4(0.5 * curl, 0.0, 0.0, 1.0); }`); this.vorticityShader = this.compileShader(this.gl.FRAGMENT_SHADER, `precision highp float; varying vec2 vUv; varying vec2 vL; varying vec2 vR; varying vec2 vT; varying vec2 vB; uniform sampler2D uVelocity; uniform sampler2D uCurl; uniform float curl; uniform float dt; void main () { float L = texture2D(uCurl, vL).x; float R = texture2D(uCurl, vR).x; float T = texture2D(uCurl, vT).x; float B = texture2D(uCurl, vB).x; float C = texture2D(uCurl, vUv).x; vec2 force = 0.5 * vec2(abs(T) - abs(B), abs(R) - abs(L)); force /= length(force) + 0.0001; force *= curl * C; force.y *= -1.0; vec2 velocity = texture2D(uVelocity, vUv).xy; gl_FragColor = vec4(velocity + force * dt, 0.0, 1.0); }`); this.pressureShader = this.compileShader(this.gl.FRAGMENT_SHADER, `precision mediump float; varying highp vec2 vUv; varying highp vec2 vL; varying highp vec2 vR; varying highp vec2 vT; varying highp vec2 vB; uniform sampler2D uPressure; uniform sampler2D uDivergence; vec2 boundary (vec2 uv) { return uv; } void main () { float L = texture2D(uPressure, boundary(vL)).x; float R = texture2D(uPressure, boundary(vR)).x; float T = texture2D(uPressure, boundary(vT)).x; float B = texture2D(uPressure, boundary(vB)).x; float C = texture2D(uPressure, vUv).x; float divergence = texture2D(uDivergence, vUv).x; float pressure = (L + R + B + T - divergence) * 0.25; gl_FragColor = vec4(pressure, 0.0, 0.0, 1.0); }`); this.gradientSubtractShader = this.compileShader(this.gl.FRAGMENT_SHADER, `precision mediump float; varying highp vec2 vUv; varying highp vec2 vL; varying highp vec2 vR; varying highp vec2 vT; varying highp vec2 vB; uniform sampler2D uPressure; uniform sampler2D uVelocity; vec2 boundary (vec2 uv) { return uv; } void main () { float L = texture2D(uPressure, boundary(vL)).x; float R = texture2D(uPressure, boundary(vR)).x; float T = texture2D(uPressure, boundary(vT)).x; float B = texture2D(uPressure, boundary(vB)).x; vec2 velocity = texture2D(uVelocity, vUv).xy; velocity -= 0.5 * vec2(R - L, T - B); gl_FragColor = vec4(velocity, 0.0, 1.0); }`); this.displayShader = this.compileShader(this.gl.FRAGMENT_SHADER, `precision highp float; varying vec2 vUv; uniform sampler2D uTexture; void main () { vec3 c = texture2D(uTexture, vUv).rgb; float a = max(c.r, max(c.g, c.b)); gl_FragColor = vec4(c, a); }`); }
+            compileShader(type, source) { const shader = this.gl.createShader(type); this.gl.shaderSource(shader, source); this.gl.compileShader(shader); if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) console.error(this.gl.getShaderInfoLog(shader)); return shader; }
+            createProgram(vertexShader, fragmentShader) { const program = this.gl.createProgram(); this.gl.attachShader(program, vertexShader); this.gl.attachShader(program, fragmentShader); this.gl.linkProgram(program); if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) console.error(this.gl.getProgramInfoLog(program)); const uniforms = {}; for (let i = 0; i < this.gl.getProgramParameter(program, this.gl.ACTIVE_UNIFORMS); i++) { const uniformName = this.gl.getActiveUniform(program, i).name; uniforms[uniformName] = this.gl.getUniformLocation(program, uniformName); } return { program, uniforms }; }
+            initPrograms() { this.splatProgram = this.createProgram(this.baseVertexShader, this.splatShader); this.advectionProgram = this.createProgram(this.baseVertexShader, this.advectionShader); this.divergenceProgram = this.createProgram(this.baseVertexShader, this.divergenceShader); this.curlProgram = this.createProgram(this.baseVertexShader, this.curlShader); this.vorticityProgram = this.createProgram(this.baseVertexShader, this.vorticityShader); this.pressureProgram = this.createProgram(this.baseVertexShader, this.pressureShader); this.gradienSubtractProgram = this.createProgram(this.baseVertexShader, this.gradientSubtractShader); this.displayProgram = this.createProgram(this.baseVertexShader, this.displayShader); }
+            initFramebuffers() {
+                const simRes = this.getResolution(this.config.SIM_RESOLUTION); const dyeRes = this.getResolution(this.config.DYE_RESOLUTION); const texType = this.ext.halfFloatTexType; const rgba = this.ext.formatRGBA; const rg = this.ext.formatRG; const r = this.ext.formatR; const filtering = this.ext.supportLinearFiltering ? this.gl.LINEAR : this.gl.NEAREST;
+                this.dye = this.createDoubleFBO(dyeRes.width, dyeRes.height, rgba.internalFormat, rgba.format, texType, filtering); this.velocity = this.createDoubleFBO(simRes.width, simRes.height, rg.internalFormat, rg.format, texType, filtering); this.divergence = this.createFBO(simRes.width, simRes.height, r.internalFormat, r.format, texType, this.gl.NEAREST); this.curl = this.createFBO(simRes.width, simRes.height, r.internalFormat, r.format, texType, this.gl.NEAREST); this.pressure = this.createDoubleFBO(simRes.width, simRes.height, r.internalFormat, r.format, texType, this.gl.NEAREST);
+                this.setupBlit();
+            }
+            createFBO(w, h, internalFormat, format, type, param) { this.gl.activeTexture(this.gl.TEXTURE0); const texture = this.gl.createTexture(); this.gl.bindTexture(this.gl.TEXTURE_2D, texture); this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, param); this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, param); this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE); this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE); this.gl.texImage2D(this.gl.TEXTURE_2D, 0, internalFormat, w, h, 0, format, type, null); const fbo = this.gl.createFramebuffer(); this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, fbo); this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, this.gl.TEXTURE_2D, texture, 0); this.gl.viewport(0, 0, w, h); this.gl.clear(this.gl.COLOR_BUFFER_BIT); return { texture, fbo, width: w, height: h, texelSizeX: 1 / w, texelSizeY: 1 / h, attach: (id) => { this.gl.activeTexture(this.gl.TEXTURE0 + id); this.gl.bindTexture(this.gl.TEXTURE_2D, texture); return id; } }; }
+            createDoubleFBO(w, h, internalFormat, format, type, param) { let fbo1 = this.createFBO(w, h, internalFormat, format, type, param); let fbo2 = this.createFBO(w, h, internalFormat, format, type, param); return { width: w, height: h, texelSizeX: fbo1.texelSizeX, texelSizeY: fbo1.texelSizeY, get read() { return fbo1; }, set read(value) { fbo1 = value; }, get write() { return fbo2; }, set write(value) { fbo2 = value; }, swap() { const temp = fbo1; fbo1 = fbo2; fbo2 = temp; } }; }
+            setupBlit() { this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.gl.createBuffer()); this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array([-1, -1, -1, 1, 1, 1, 1, -1]), this.gl.STATIC_DRAW); this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.gl.createBuffer()); this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([0, 1, 2, 0, 2, 3]), this.gl.STATIC_DRAW); this.gl.vertexAttribPointer(0, 2, this.gl.FLOAT, false, 0, 0); this.gl.enableVertexAttribArray(0); }
+            blit(target) { this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, target ? target.fbo : null); this.gl.drawElements(this.gl.TRIANGLES, 6, this.gl.UNSIGNED_SHORT, 0); }
+            getResolution(resolution) { let aspectRatio = this.gl.drawingBufferWidth / this.gl.drawingBufferHeight; if (aspectRatio < 1) aspectRatio = 1 / aspectRatio; const min = Math.round(resolution); const max = Math.round(resolution * aspectRatio); if (this.gl.drawingBufferWidth > this.gl.drawingBufferHeight) return { width: max, height: min }; else return { width: min, height: max }; }
+            generateColor() { const h = Math.random(); const {r, g, b} = this.HSVtoRGB(h, 1.0, 1.0); return [r, g, b]; }
+            HSVtoRGB(h, s, v) { let r, g, b, i = Math.floor(h * 6), f = h * 6 - i, p = v * (1 - s), q = v * (1 - f * s), t = v * (1 - (1 - f) * s); switch (i % 6) { case 0: r = v, g = t, b = p; break; case 1: r = q, g = v, b = p; break; case 2: r = p, g = v, b = t; break; case 3: r = p, g = q, b = v; break; case 4: r = t, g = p, b = v; break; case 5: r = v, g = p, b = q; break; } return { r, g, b }; }
+            splat(x, y, dx, dy, color) { this.gl.viewport(0, 0, this.velocity.width, this.velocity.height); this.gl.useProgram(this.splatProgram.program); this.gl.uniform1i(this.splatProgram.uniforms.uTarget, this.velocity.read.attach(0)); this.gl.uniform1f(this.splatProgram.uniforms.aspectRatio, this.canvas.width / this.canvas.height); this.gl.uniform2f(this.splatProgram.uniforms.point, x, y); this.gl.uniform3f(this.splatProgram.uniforms.color, dx, dy, 0); this.gl.uniform1f(this.splatProgram.uniforms.radius, this.config.SPLAT_RADIUS / 100); this.blit(this.velocity.write); this.velocity.swap(); this.gl.viewport(0, 0, this.dye.width, this.dye.height); this.gl.uniform1i(this.splatProgram.uniforms.uTarget, this.dye.read.attach(0)); this.gl.uniform3f(this.splatProgram.uniforms.color, ...color); this.blit(this.dye.write); this.dye.swap(); }
+            automaticSplats(dt) { if (this.config.PAUSED) return; this.splatTimer += dt; if (this.splatTimer > 0.15) { this.splatTimer = 0; const x = Math.random(); const y = Math.random(); const dx = (Math.random() - 0.5) * 1500; const dy = (Math.random() - 0.5) * 1500; const color = this.generateColor(); color[0] *= 5.0; color[1] *= 5.0; color[2] *= 5.0; this.splat(x, y, dx, dy, color); } }
+            resizeCanvas() { const width = Math.floor(this.canvas.clientWidth * (window.devicePixelRatio || 1)); const height = Math.floor(this.canvas.clientHeight * (window.devicePixelRatio || 1)); if (this.canvas.width !== width || this.canvas.height !== height) { this.canvas.width = width; this.canvas.height = height; return true; } return false; }
+            step(dt) { this.gl.disable(this.gl.BLEND); this.gl.viewport(0, 0, this.velocity.width, this.velocity.height); this.gl.useProgram(this.curlProgram.program); this.gl.uniform2f(this.curlProgram.uniforms.texelSize, this.velocity.texelSizeX, this.velocity.texelSizeY); this.gl.uniform1i(this.curlProgram.uniforms.uVelocity, this.velocity.read.attach(0)); this.blit(this.curl); this.gl.useProgram(this.vorticityProgram.program); this.gl.uniform2f(this.vorticityProgram.uniforms.texelSize, this.velocity.texelSizeX, this.velocity.texelSizeY); this.gl.uniform1i(this.vorticityProgram.uniforms.uVelocity, this.velocity.read.attach(0)); this.gl.uniform1i(this.vorticityProgram.uniforms.uCurl, this.curl.attach(1)); this.gl.uniform1f(this.vorticityProgram.uniforms.curl, this.config.CURL); this.gl.uniform1f(this.vorticityProgram.uniforms.dt, dt); this.blit(this.velocity.write); this.velocity.swap(); this.gl.useProgram(this.divergenceProgram.program); this.gl.uniform2f(this.divergenceProgram.uniforms.texelSize, this.velocity.texelSizeX, this.velocity.texelSizeY); this.gl.uniform1i(this.divergenceProgram.uniforms.uVelocity, this.velocity.read.attach(0)); this.blit(this.divergence); this.gl.useProgram(this.pressureProgram.program); this.gl.uniform2f(this.pressureProgram.uniforms.texelSize, this.velocity.texelSizeX, this.velocity.texelSizeY); this.gl.uniform1i(this.pressureProgram.uniforms.uDivergence, this.divergence.attach(0)); for (let i = 0; i < this.config.PRESSURE_ITERATIONS; i++) { this.gl.uniform1i(this.pressureProgram.uniforms.uPressure, this.pressure.read.attach(1)); this.blit(this.pressure.write); this.pressure.swap(); } this.gl.useProgram(this.gradienSubtractProgram.program); this.gl.uniform2f(this.gradienSubtractProgram.uniforms.texelSize, this.velocity.texelSizeX, this.velocity.texelSizeY); this.gl.uniform1i(this.gradienSubtractProgram.uniforms.uPressure, this.pressure.read.attach(0)); this.gl.uniform1i(this.gradienSubtractProgram.uniforms.uVelocity, this.velocity.read.attach(1)); this.blit(this.velocity.write); this.velocity.swap(); this.gl.useProgram(this.advectionProgram.program); this.gl.uniform2f(this.advectionProgram.uniforms.texelSize, this.velocity.texelSizeX, this.velocity.texelSizeY); this.gl.uniform1i(this.advectionProgram.uniforms.uVelocity, this.velocity.read.attach(0)); this.gl.uniform1i(this.advectionProgram.uniforms.uSource, this.velocity.read.attach(0)); this.gl.uniform1f(this.advectionProgram.uniforms.dt, dt); this.gl.uniform1f(this.advectionProgram.uniforms.dissipation, this.config.VELOCITY_DISSIPATION); this.blit(this.velocity.write); this.velocity.swap(); this.gl.viewport(0, 0, this.dye.width, this.dye.height); this.gl.uniform1i(this.advectionProgram.uniforms.uVelocity, this.velocity.read.attach(0)); this.gl.uniform1i(this.advectionProgram.uniforms.uSource, this.dye.read.attach(1)); this.gl.uniform1f(this.advectionProgram.uniforms.dissipation, this.config.DENSITY_DISSIPATION); this.blit(this.dye.write); this.dye.swap(); }
+            render() { this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA); this.gl.enable(this.gl.BLEND); this.gl.viewport(0, 0, this.gl.drawingBufferWidth, this.gl.drawingBufferHeight); this.gl.useProgram(this.displayProgram.program); this.gl.uniform1i(this.displayProgram.uniforms.uTexture, this.dye.read.attach(0)); this.blit(null); }
+            updateFrame = () => { const dt = this.calcDeltaTime(); if (this.resizeCanvas()) this.initFramebuffers(); this.automaticSplats(dt); this.step(dt); this.render(); requestAnimationFrame(this.updateFrame); }
+            calcDeltaTime() { const now = Date.now(); let dt = (now - this.lastUpdateTime) / 1000; dt = Math.min(dt, 0.016666); this.lastUpdateTime = now; return dt; }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => { new FluidBackground({}); });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.querySelector('.hamburger'); const navLinks = document.querySelector('.nav-links'); const navLinkItems = document.querySelectorAll('.nav-links a');
+            hamburger.addEventListener('click', () => { navLinks.classList.toggle('active'); const icon = hamburger.querySelector('i'); if (icon.classList.contains('fa-bars')) { icon.classList.remove('fa-bars'); icon.classList.add('fa-times'); } else { icon.classList.remove('fa-times'); icon.classList.add('fa-bars'); } });
+            navLinkItems.forEach(link => { link.addEventListener('click', () => { if (navLinks.classList.contains('active')) { navLinks.classList.remove('active'); hamburger.querySelector('i').classList.remove('fa-times'); hamburger.querySelector('i').classList.add('fa-bars'); } }); });
+            const sections = document.querySelectorAll('section'); const observer = new IntersectionObserver(entries => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); } }); }, { threshold: 0.1 });
+            sections.forEach(section => { observer.observe(section); });
+        });
+    </script>
+</body>
+</html>
