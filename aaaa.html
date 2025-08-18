@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cosmic Dust EUREKA Welcome</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #0d0d1a;
+      font-family: 'Montserrat', sans-serif;
+      overflow: hidden;
+      color: #fff8e7;
+    }
+    .stage {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    #particleCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      image-rendering: optimizeSpeed;
+      will-change: transform;
+      opacity: 1;
+      transition: opacity 0.6s ease;
+    }
+    #mainText {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 8vw;
+      color: #fff8e7;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      z-index: 200;
+      display: none;
+      user-select: none;
+      pointer-events: none;
+      opacity: 0;
+      text-shadow: 0 0 12px #ffe256;
+      transition: opacity 0.6s ease;
+    }
+    #launchBtn {
+      position: absolute; left: 50%; top: 72%;
+      transform: translateX(-50%) scale(0);
+      background: linear-gradient(145deg, #ffe256, #ffd700);
+      color: #3a2e00;
+      font-size: 28px;
+      border: none;
+      padding: 16px 60px;
+      border-radius: 30px;
+      box-shadow: 0 6px 38px #ffd7004b, inset 0 -4px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      font-weight: 700; letter-spacing: 0.04em;
+      z-index: 150;
+      transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    #launchBtn:hover, #launchBtn:focus {
+      box-shadow: 0 8px 60px #ffd70088, inset 0 -2px 5px rgba(0,0,0,0.1);
+      transform: translateX(-50%) scale(1.05);
+      color: #000;
+      outline: none;
+    }
+    .confetti {
+      position: absolute;
+      width: 8px; height: 16px;
+      opacity: 1; border-radius: 4px;
+      z-index: 120; pointer-events: none;
+      will-change: transform, opacity;
+    }
+  </style>
+</head>
+<body>
+  <div class="stage" role="main" aria-label="Welcome Animation">
+    <canvas id="particleCanvas"></canvas>
+    <div id="mainText">EUREKA</div>
+    <button id="launchBtn" tabindex="0" aria-label="Launch Eureka">Launch</button>
+  </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    const stage = document.querySelector('.stage');
+    const btn = document.getElementById('launchBtn');
+    const mainText = document.getElementById('mainText');
+
+    const PARTICLE_COUNT = 2500;
+    const PARTICLE_COLORS = ["#ffffff", "#ffd700", "#a7c7e7"];
+    let particles = [];
+    let textPixels = [];
+    let animationState = 'drifting'; 
+    let mouse = { x: null, y: null, radius: 100 };
+    let glowAmount = 0;
+
+    function resizeCanvas() {
+        canvas.width = stage.offsetWidth;
+        canvas.height = stage.offsetHeight;
+        getTextPixels();
+        initParticles();
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    class Particle {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.size = Math.random() * 1.5 + 0.5;
+            this.targetSize = this.size;
+            this.density = (Math.random() * 30) + 1;
+            this.velX = Math.random() * 1 - 0.5;
+            this.velY = Math.random() * 1 - 0.5;
+            this.color = PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
+            this.targetX = 0;
+            this.targetY = 0;
+            this.alpha = 0.6 + Math.random() * 0.4;
+        }
+        draw() {
+            ctx.save();
+            ctx.shadowColor = this.color;
+            ctx.shadowBlur = (animationState === 'glow') ? glowAmount : 0;
+            ctx.globalAlpha = this.alpha;
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+        update() {
+            if (animationState === 'forming' || animationState === 'solid' || animationState === 'glow') {
+                this.size += (this.targetSize - this.size) * 0.15;
+            }
+            if (animationState === 'drifting') {
+                this.x += this.velX;
+                this.y += this.velY;
+                if (this.x > canvas.width + 5 || this.x < -5) this.velX *= -1;
+                if (this.y > canvas.height + 5 || this.y < -5) this.velY *= -1;
+                if(mouse.x !== null && mouse.y !== null) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < mouse.radius) {
+                        let force = (mouse.radius - distance) / mouse.radius;
+                        this.x -= (dx / distance) * force * this.density * 0.2;
+                        this.y -= (dy / distance) * force * this.density * 0.2;
+                    }
+                }
+            } else if (animationState === 'forming') {
+                let dx = this.targetX - this.x;
+                let dy = this.targetY - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance > 0.1) {
+                    this.x += dx * 0.09;
+                    this.y += dy * 0.09;
+                } else {
+                    this.x = this.targetX;
+                    this.y = this.targetY;
+                }
+            } else if (animationState === 'solid' || animationState === 'glow') {
+                this.x = this.targetX;
+                this.y = this.targetY;
+            }
+        }
+    }
+
+    function initParticles() {
+        particles = [];
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
+        }
+    }
+
+    function getTextPixels() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        textPixels = [];
+        const fontSize = Math.min(canvas.width * 0.14, 150);
+        const text = "EUREKA";
+        ctx.fillStyle = "white";
+        ctx.font = `900 ${fontSize}px Montserrat`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        const textMetrics = ctx.measureText(text);
+        const textHeight = textMetrics.actualBoundingBoxAscent + textMetrics.actualBoundingBoxDescent;
+        const yPosition = (canvas.height / 2) - (textHeight / 2);
+        ctx.fillText(text, canvas.width / 2, yPosition);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const scanStep = Math.max(1, Math.floor(4 - (canvas.width / 500)));
+        for (let y = 0; y < imageData.height; y += scanStep) {
+            for (let x = 0; x < imageData.width; x += scanStep) {
+                if (imageData.data[(y * imageData.width + x) * 4 + 3] > 128) {
+                    textPixels.push({ x: x, y: y });
+                }
+            }
+        }
+    }
+
+    let lastTime = 0;
+    const fpsInterval = 1000 / 30;
+    function animate(time = 0) {
+        if (animationState !== 'text') {
+          if (time - lastTime > fpsInterval) {
+            lastTime = time;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+          }
+          requestAnimationFrame(animate);
+        }
+    }
+
+    window.addEventListener('mousemove', (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+    });
+    window.addEventListener('mouseout', () => {
+        mouse.x = null;
+        mouse.y = null;
+    });
+
+    resizeCanvas();
+    animate();
+
+    const mainTimeline = gsap.timeline({ delay: 1.5 });
+    mainTimeline.to({}, {
+        duration: 2.1,
+        onStart: () => {
+            animationState = 'forming';
+            if (textPixels.length > 0) {
+                particles.forEach((p) => {
+                    const targetPixel = textPixels[Math.floor(Math.random() * textPixels.length)];
+                    p.targetX = targetPixel.x + (Math.random() - 0.5) * 3;
+                    p.targetY = targetPixel.y + (Math.random() - 0.5) * 3;
+                    p.targetSize = 2 + Math.random() * 2;
+                    p.alpha = 0.6 + Math.random() * 0.4;
+                });
+            }
+        },
+        onComplete: () => {
+            animationState = 'solid';
+            particles.forEach(p => {
+                p.targetSize = 3 + Math.random() * 3;
+                p.alpha = 0.8 + Math.random() * 0.2;
+            });
+        }
+    });
+
+    mainTimeline.to({}, { duration: 0.7 });
+
+    mainTimeline.to({}, {
+        duration: 0.7,
+        onStart: () => {
+            animationState = 'glow';
+            gsap.to(window, {
+                duration: 0.7,
+                ease: "power2.in",
+                onUpdate: function() {
+                    glowAmount = 35 + this.progress() * 25;
+                }
+            });
+        },
+        onComplete: () => {
+            gsap.to(window, {
+                duration: 0.48,
+                ease: "power2.out",
+                onUpdate: function() {
+                    glowAmount = 60 * (1 - this.progress());
+                },
+                onComplete: () => {
+                    mainText.style.display = "block";
+                    gsap.to(canvas, { duration: 0.6, opacity: 0, ease: "power2.inOut" });
+                    gsap.to(mainText, { duration: 0.6, opacity: 1, ease: "power2.inOut",
+                      onComplete: () => {
+                        animationState = 'text';
+                        canvas.style.display = "none";
+                        canvas.style.opacity = 1;
+                      }
+                    });
+                }
+            });
+        }
+    });
+
+    mainTimeline.add(() => spawnConfetti(100));
+    mainTimeline.to(btn, { scale: 1, duration: 0.8, ease: "elastic.out(1, 0.5)" }, "<");
+
+    const CONFETTI_COLORS = ["#ffd700", "#FDB813", "#81C7F5", "#F45858", "#69DC5A", "#fff", "#ff6b6b"];
+    function getRandom(min, max) { return Math.random() * (max - min) + min; }
+    function spawnConfetti(count = 60) {
+      for (let i = 0; i < count; i++) {
+        let conf = document.createElement('div');
+        conf.className = "confetti";
+        conf.style.background = CONFETTI_COLORS[Math.floor(getRandom(0, CONFETTI_COLORS.length))];
+        conf.style.left = `${getRandom(10, 90)}%`;
+        conf.style.top = `${getRandom(-10, 50)}%`;
+        stage.appendChild(conf);
+        gsap.to(conf, {
+          y: `+=${getRandom(200, 400)}`, x: `+=${getRandom(-150, 150)}`,
+          rotation: getRandom(0, 360), scale: getRandom(0.5, 1.2),
+          opacity: 0, duration: getRandom(1.5, 3),
+          ease: "power2.out", onComplete: () => conf.remove()
+        });
+      }
+    }
+
+    btn.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') btn.click();
+    });
+
+    btn.addEventListener('click', () => {
+        gsap.to(btn, { scale: 0.9, duration: 0.1, yoyo: true, repeat: 1 });
+        spawnConfetti(200);
+
+        // ✅ Redirect after confetti (1.2s delay)
+        setTimeout(() => {
+            window.location.href = "main.html";
+        }, 1200);
+    });
+});
+</script>
+</body>
+</html>
